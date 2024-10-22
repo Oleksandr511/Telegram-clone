@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId       String   @id @default(uuid())
+  name         String
+  phoneNumber  String
+  password     String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  chatParticipants ChatParticipant[]
+  chatMessages     ChatMessage[]
+}
+
+model Chat {
+  chatId      String  @id @default(uuid())
+  type        String // group or private or channel
+  name        String
+  description String?
+  image       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatParticipants ChatParticipant[]
+  chatMessages     ChatMessage[]
+  chatAttachments  ChatAttachment[]
+  Invitation       Invitation[]
+}
+
+model ChatParticipant {
+  chatId     String
+  userId     String
+  status     Int // admin, member, blocked, invited
+  permission Int // read, write, delete
+
+  chat Chat @relation(fields: [chatId], references: [chatId], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([chatId, userId])
+}
+
+model Invitation {
+  id         String   @id @default(uuid())
+  chatId     String
+  senderId   String
+  receiverId String
+  status     Int // pending, accepted, declined
+  createdAt  DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [chatId], onDelete: Cascade)
+}
+
+model ChatMessage {
+  messageId    String  @id @default(uuid())
+  chatId       String
+  userId       String
+  message      String
+  attachmentId String?
+  status       Int // sent, read
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chat Chat @relation(fields: [chatId], references: [chatId], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model ChatAttachment {
+  attachmentId String @id @default(uuid())
+  url          String
+
+  type   String // image, video, audio, file
+  chatId String
+
+  createdAt DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [chatId], onDelete: Cascade)
+}

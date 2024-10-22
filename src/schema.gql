@@ -1,0 +1,91 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  userId: String!
+  name: String!
+  phoneNumber: String!
+}
+
+type ChatParticipant {
+  chatId: String!
+  userId: String!
+  status: Int!
+  permission: Int!
+}
+
+type Auth {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+type Chat {
+  name: String!
+  type: String!
+  description: String!
+}
+
+type Invitation {
+  chatId: String!
+  senderId: String!
+  receiverId: String!
+  status: Int!
+}
+
+type Query {
+  getUsers: [User!]!
+  getUserById(id: String!): User!
+  getUsersChatParticipants: [ChatParticipant!]!
+  getChatParticipants(chatId: String!): [ChatParticipant!]!
+  getChatInvitations(chatId: String!): [Invitation!]!
+}
+
+type Mutation {
+  register(createAuthInput: CreateAuthInput!): Auth!
+  login(loginAuthInput: LoginAuthInput!): Auth!
+  refreshTokens(updateAuthInput: UpdateAuthInput!): Auth!
+  createChat(createChatInput: CreateChatInput!): Chat!
+  createChatParticipant(addParticipantInput: AddParticipantInput!): [ChatParticipant!]!
+  createInvitation(InvitationInput: InvitationInput!): Invitation!
+  respondToInvitation(accept: Boolean!, invitationId: String!): Invitation!
+}
+
+input CreateAuthInput {
+  name: String!
+  phoneNumber: String!
+  password: String!
+}
+
+input LoginAuthInput {
+  phoneNumber: String!
+  password: String!
+}
+
+input UpdateAuthInput {
+  name: String
+  phoneNumber: String
+  password: String
+  refreshToken: String!
+}
+
+input CreateChatInput {
+  name: String!
+  type: String!
+  description: String
+  image: String
+}
+
+input AddParticipantInput {
+  chatId: String!
+  userId: String!
+  status: Float
+  permission: Float
+}
+
+input InvitationInput {
+  chatId: String!
+  senderId: String
+  receiverId: String!
+}
